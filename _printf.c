@@ -46,8 +46,8 @@ int _printf(const char *format, ...)
 			precision = calculate_precision(format, &i, args);
 			size = calculate_size(format, &i);
 			++i;
-			output = print_handler(format, &i, args, buffer,
-				flags, width, precision, size);
+			
+			
 			if (output == -1)
 				return (-1);
 			output_chars += output;

@@ -11,7 +11,7 @@
 #define FLAG_V1 1
 #define FLAG_V2 2
 #define FLAG_V4 4
-#define HASH_Flag 8
+#define HASH_FLAG 8
 #define SPACE_FLAG 16
 
 /* SIZES */
@@ -25,7 +25,7 @@ int calculate_width(const char *format, int *index, va_list list);
 int calculate_precision(const char *format, int *index, va_list list);
 int calculate_size(const char *format, int *index);
 void write_buffer(char buffer[], int *buff_ind);
-
+int is_digit(char c);
 
 int _printf(const char *format, ...);
 int print_handler(const char *fmt, int *i,
