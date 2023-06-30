@@ -1,64 +1,183 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <unistd.h>
 #include "main.h"
- 
-/* print_buffer - Prints the contents of the buffer if it exist
- * @buffer: Array of chars
- * @buffer_index: Index at which to add next char, represents the length.
- */
-void write_buffer(char buffer[], int *buffer_index)
-{
-	if (*buffer_index > 0)
-		write(1, &buffer[0], *buffer_index);
-	*buffer_index = 0;
-}
 
-/**
- * _printf - Printf function
+ /* _printf - Printf function
  * @format: format.
  * Return: Printed chars.
  */
 int _printf(const char *format, ...)
 {
-	int i, output = 0, output_chars = 0;
-	int flags, width, precision, size, buffer_index = 0;
 	va_list args;
-	char buffer[BUFFER_SIZE];
+	char c, *s, buffer[16];
+	int index = 0, num;
+	int count = 0;
 
-	if (format == NULL)
-		return (-1);
-
-	va_start(args, format);
-
-	for (i = 0; format && format[i] != '\0'; i++)
+va_start(args, format);
+while (*format != '\0')
+{
+	if (*format == '%')
 	{
-		if (format[i] != '%')
+		format++;
+		/** Handle the conversion specifier*/
+		switch (*format)
 		{
-			buffer[buffer_index++] = format[i];
-			if (buffer_index == BUFFER_SIZE)
-				write_buffer(buffer, &buffer_index);
-			/* write(1, &format[i], 1);*/
-			output_chars++;
+			case 'c':
+				{
+					c = va_arg(args, int);
+					count += _putchar(c);
+					break;
+				}
+			case 's':
+				{
+					s = va_arg(args, char*);
+					if (s == NULL)
+						s = "(null)";
+					while (*s != '\0')
+					{
+						count += _putchar(*s);
+						s++;
+					}
+					break;
+				}
+			case '%':
+				count += _putchar('%');
+				break;
+			case 'd':
+			case 'i':
+				{
+					num = va_arg(args, int);
+					if (num < 0)
+					{
+						count += _putchar('-');
+						num = -num;
+					}
+					/** Print the digits in reverse order*/
+					index = 0;
+					if (num == 0)
+						buffer[index++] = '0';
+					else
+					{
+						while (num != 0)
+						{
+							buffer[index++] = '0' + (num % 10);
+							num /= 10;
+						}
+					}
+					while (index > 0)
+					{
+						count += _putchar(buffer[--index]);
+					}
+					break;
+				}
+			case 'u':
+				{
+					unsigned int num1 = va_arg(args, unsigned int);
+					char buffer[16];
+					int index = 0;
+					if (num1 == 0)
+					{
+						buffer[index++] = '0';
+					}
+					else
+					{
+						while (num1 != 0)
+						{
+							buffer[index++] = '0' + (num1 % 10);
+							num1 /= 10;
+						}
+					}
+					while (index > 0)
+					{
+						count += _putchar(buffer[--index]);
+					}
+					break;
+				}
+			case 'o':
+				{
+					unsigned int num = va_arg(args, unsigned int);
+					char buffer[16];
+					int index = 0;
+					if (num == 0)
+					{
+						buffer[index++] = '0';
+					}
+					else
+					{
+						while (num != 0)
+						{
+							buffer[index++] = '0' + (num % 8);
+							num /= 8;
+						}
+					}
+					while (index > 0)
+					{
+						count += _putchar(buffer[--index]);
+					}
+					break;
+				}
+			case 'x':
+				{
+					unsigned int num = va_arg(args, unsigned int);
+					char buffer[16];
+					int index = 0;
+					if (num == 0)
+					{
+						buffer[index++] = '0';
+					}
+					else
+					{
+						while (num != 0)
+						{
+							int digit = num % 16;
+							buffer[index++] = (digit < 10) ? ('0' + digit) : ('a' + digit - 10);
+							num /= 16;
+						}
+					}
+					while (index > 0)
+					{
+						count += _putchar(buffer[--index]);
+					}
+					break;
+				}
+			case 'X':
+				{
+					unsigned int num = va_arg(args, unsigned int);
+					char buffer[16];
+					int index = 0;
+					if (num == 0)
+					{
+						buffer[index++] = '0';
+					}
+					else
+					{
+						while (num != 0)
+						{
+							int digit = num % 16;
+							buffer[index++] = (digit < 10) ? ('0' + digit) : ('A' + digit - 10);
+							num /= 16;
+						}
+					}
+					while (index > 0)
+					{
+						count += _putchar(buffer[--index]);
+					}
+					break;
+				}
+			default:
+				count += _putchar('%');
+				count += _putchar(*format);
+				break;
 		}
-		else
-		{
-			write_buffer(buffer, &buffer_index);
-			flags = read_active_flags(format, &i);
-			width = calculate_width(format, &i, args);
-			precision = calculate_precision(format, &i, args);
-			size = calculate_size(format, &i);
-			++i;
-			
-			
-			if (output == -1)
-				return (-1);
-			output_chars += output;
-		}
+	}
+	else
+	{
+		count += _putchar(*format);
+	}
+	format++;
 }
-
-	write_buffer(buffer, &buffer_index);
-
-	va_end(args);
-
-	return (output_chars);
+va_end(args);
+return (count);
 }
-
-

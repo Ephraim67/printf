@@ -31,7 +31,7 @@ int _printf(const char *format, ...);
 int print_handler(const char *fmt, int *i,
 va_list list, char buffer[], int flags, int width, int precision, int size);
 
-
+int _putchar(char c);
 
 
 /**
